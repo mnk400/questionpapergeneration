@@ -1,20 +1,13 @@
 import sqlite3
 import random
-import itertools
 import fpdf
+from tkinter import *
 
 sql = sqlite3.connect("Questionpaper.db")
 cur = sql.cursor()
 pdf = fpdf.FPDF(format='letter')
 
-def recordentry():
-    print("Enter Question?")
-    qs = input()
-    print("Enter Marks")
-    marks = input()
-    print("Enter Difficulty?(Easy/Medium/Hard)")
-    diff = input()
-    diff = diff.upper()
+def recordentry(qs, marks, diff):
     sql_id_cmd = ("SELECT MAX(ID) FROM "+diff+marks)
     cur.execute(sql_id_cmd)
     data = cur.fetchone()
@@ -22,7 +15,8 @@ def recordentry():
         i = 1
     else:
         i = data[0] + 1
-    sql_in_cmd = ("INSERT INTO "+diff+marks+" VALUES("+str(i)+",'"+qs+"');")
+    sql_in_cmd = ("INSERT INTO "+diff+marks+" VALUES("+str(i)+",\""+qs+"\");")
+    print(sql_in_cmd)
     cur.execute(sql_in_cmd)
     sql.commit()
 
@@ -115,6 +109,46 @@ def random_num_gen(n):
     rlist = [x+1 for x in rlist]
     return rlist
 
+def mainwin():
+    window = Tk()
+    window.title("Question Paper Generator")
+    window.configure(background='#ECECEC')
+    window.geometry('400x200')
+    lbl = Label(window, font="SF\Mono 36 bold", text = "Question Paper\nGenerator",background='#ECECEC',justify='left')
+    lbl.grid(column=0, row=0,padx=20,pady=10)
+    frame=Frame(window)
+    frame.grid(column=0,row=3,padx=0,pady=10)
+    addbutton=Button(window,text="Add Question",)
+    addbutton.config(height = 2, width = 15,bg='#ECECEC',justify='left',bd=0,relief='raised',command=addQwin)
+    addbutton.grid(column=0,row=2)
+
+    genbutton=Button(window,text="Generate PDF",)
+    genbutton.config(height = 2, width = 15,bg='#ECECEC',justify='left',bd=0,relief='raised')
+    genbutton.grid(column=1,row=2)
+    window.mainloop()
+
+def addQwin():
+    window = Tk()
+    window.title("Add Questions")
+    window.configure(background='#ECECEC')
+    window.geometry('400x300')
+mainwin()
+#print("1. Generate Paper\n2. Add Questions to Database")
+#n=input()
+
+#if n=='2':
+#    print("Enter Question?")
+#    qs = input()
+#    print("Enter Marks")
+#    marks = input()
+#    print("Enter Difficulty?(Easy/Medium/Hard)")
+#    diff = input()
+#    diff = diff.upper()
+#    recordentry(qs, marks, diff)
+#elif n=='1':
+#    questionselector()
+#else:
+#    print("Not a Valid Entery")
 #recordentry()
-questionselector()
+#questionselector()
 sql.close()
